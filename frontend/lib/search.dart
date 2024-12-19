@@ -110,7 +110,7 @@ class FindSupermarketsPage extends StatelessWidget {
   }
 }
 
-class SupermarketProfilePage extends StatelessWidget {
+class SupermarketProfilePage extends StatefulWidget {
   final String logoPath;
   final String supermarketName;
   final double sustainabilityScore;
@@ -127,6 +127,20 @@ class SupermarketProfilePage extends StatelessWidget {
     required this.co2Saved,
     this.usePlaceholderLogo = false,
   }) : super(key: key);
+
+  @override
+  State<SupermarketProfilePage> createState() => _SupermarketProfilePageState();
+}
+
+class _SupermarketProfilePageState extends State<SupermarketProfilePage> {
+  late double _userRating;
+  bool _hasUserRated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userRating = widget.sustainabilityScore;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +160,7 @@ class SupermarketProfilePage extends StatelessWidget {
               // Logo and Supermarket Name
               Column(
                 children: [
-                  usePlaceholderLogo
+                  widget.usePlaceholderLogo
                       ? Container(
                           width: 80,
                           height: 80,
@@ -166,13 +180,13 @@ class SupermarketProfilePage extends StatelessWidget {
                           ),
                         )
                       : Image.asset(
-                          logoPath,
+                          widget.logoPath,
                           height: 80,
                           width: 80,
                         ),
                   const SizedBox(height: 8),
                   Text(
-                    supermarketName,
+                    widget.supermarketName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -192,14 +206,14 @@ class SupermarketProfilePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              _buildStarRating(sustainabilityScore),
+              _buildStarRating(_userRating),
 
               const SizedBox(height: 16),
 
               // Food Not Wasted Section
               _buildStatCard(
                 color: Colors.red,
-                title: foodNotWasted,
+                title: widget.foodNotWasted,
                 subtitle: 'Food Not Wasted',
                 icon: Icons.food_bank_outlined,
               ),
@@ -209,7 +223,7 @@ class SupermarketProfilePage extends StatelessWidget {
               // CO2 Saved Section
               _buildStatCard(
                 color: Colors.orange,
-                title: co2Saved,
+                title: widget.co2Saved,
                 subtitle: 'CO2 Saved (tons)',
                 icon: Icons.shopping_basket_outlined,
               ),
@@ -293,15 +307,45 @@ class SupermarketProfilePage extends StatelessWidget {
       children: [
         ...List.generate(
           fullStars,
-          (index) => const Icon(Icons.star, color: Colors.purple),
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                _userRating = index + 1.0;
+                _hasUserRated = true;
+              });
+            },
+            child: Icon(
+              Icons.star,
+              color: _hasUserRated ? Colors.purple : Colors.purple[200],
+            ),
+          ),
         ),
         ...List.generate(
           halfStars,
-          (index) => const Icon(Icons.star_half, color: Colors.purple),
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                _userRating = fullStars + 0.5;
+                _hasUserRated = true;
+              });
+            },
+            child: Icon(
+              Icons.star_half,
+              color: _hasUserRated ? Colors.purple : Colors.purple[200],
+            ),
+          ),
         ),
         ...List.generate(
           emptyStars,
-          (index) => const Icon(Icons.star_border, color: Colors.grey),
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                _userRating = fullStars + halfStars + index + 1.0;
+                _hasUserRated = true;
+              });
+            },
+            child: const Icon(Icons.star_border, color: Colors.grey),
+          ),
         ),
       ],
     );

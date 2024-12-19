@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
 
   // Define your routes in a static map for easy maintenance.
   static final Map<String, WidgetBuilder> routes = {
-    '/': (context) => const ProductsStockPage(),
+    '/': (context) => const FindSupermarketsPage(),
     '/supermarket': (context) => const FindSupermarketsPage(),
     '/products_stock': (context) => const ProductsStockPage()
   };

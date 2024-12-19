@@ -168,9 +168,14 @@ class DatabaseHelper {
   String _calculateStatus(String expirationDate) {
     final currentDate = DateTime.now();
     final expireDate = DateTime.parse(expirationDate);
-    final difference = expireDate.difference(currentDate).inDays;
+    
+    // Remove time component to compare only dates
+    final today = DateTime(currentDate.year, currentDate.month, currentDate.day);
+    final expiryDay = DateTime(expireDate.year, expireDate.month, expireDate.day);
+    
+    final difference = expiryDay.difference(today).inDays;
 
-    if (difference < 0) return 'expired';
+    if (difference <= 0) return 'expired';
     if (difference <= 5) return 'almost_expired';
     return 'valid';
   }

@@ -21,15 +21,34 @@ class _ProductsStockPageState extends State<ProductsStockPage> {
 
   Future<void> _loadProducts() async {
     await _dbHelper.updateProductStatuses(); // Atualiza status dos produtos
-    final products = await _dbHelper.getProducts(_activeTab);
+    List<Product> products;
+    if (_activeTab == 'Almost Expired') {
+      products = await _dbHelper.getProducts('almost_expired');
+    } else if (_activeTab == 'Expired') {
+      products = await _dbHelper.getProducts('expired');
+    } else {
+      products = await _dbHelper.getProducts('All Products');
+    }
     setState(() {
       _products = products;
     });
+    // Print stock information to terminal
+    print('\n=== Current Stock ===');
+    for (var product in products) {
+      print('Product: ${product.name}');
+      print('Price: ${product.price}');
+      print('Expiration Date: ${product.expirationDate}');
+      print('Status: ${product.status}');
+      print('------------------------');
+    }
   }
 
   Future<void> _addProduct({Product? product}) async {
     final nameController = TextEditingController(text: product?.name ?? '');
-    final priceController = TextEditingController(text: product?.price ?? '');
+    final priceController = TextEditingController(
+        text: product?.price != null
+            ? product!.price.replaceAll('€', '').trim()
+            : '');
     DateTime? selectedDate = product?.expirationDate != null
         ? DateTime.parse(product!.expirationDate)
         : null;
